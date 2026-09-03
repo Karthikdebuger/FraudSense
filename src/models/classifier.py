@@ -240,7 +240,7 @@ class FraudClassifier:
         with open(path / "classifier_config.json", "w") as f:
             json.dump(config, f, indent=2)
 
-        print(f"✅ Models saved to {path}/")
+        print(f"Models saved to {path}/")
 
     def load(self, model_dir: str = "models") -> None:
         """Load trained models and config from disk."""
@@ -258,4 +258,4 @@ class FraudClassifier:
         self.feature_columns = config["feature_columns"]
         self.best_params = config["best_params"]
 
-        print(f"✅ Models loaded from {path}/")
+        print(f"Models loaded from {path}/")

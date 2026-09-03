@@ -79,23 +79,23 @@ def _load_model():
         classifier = FraudClassifier()
         classifier.load(str(model_dir))
         load_state(str(model_dir))
-        logger.info("✅ Model loaded successfully")
+        logger.info("Model loaded successfully")
     else:
-        logger.warning("⚠️  No trained model found. Run train_model.py first.")
+        logger.warning("No trained model found. Run train_model.py first.")
 
     if metrics_file.exists():
         with open(metrics_file) as f:
             cached_metrics = json.load(f)
-        logger.info("✅ Cached metrics loaded")
+        logger.info("Cached metrics loaded")
 
     # Try to load explainer
     try:
         from src.llm.explainer import check_api_available, explain_transaction
         _explainer = explain_transaction
         explainer_available = check_api_available()
-        logger.info(f"✅ LLM explainer loaded (API available: {explainer_available})")
+        logger.info(f"LLM explainer loaded (API available: {explainer_available})")
     except Exception as e:
-        logger.warning(f"⚠️  LLM explainer not available: {e}")
+        logger.warning(f"LLM explainer not available: {e}")
         explainer_available = False
 
 

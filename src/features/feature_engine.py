@@ -413,7 +413,7 @@ def compute_features(
     for col in feature_cols:
         df[col] = df[col].replace([np.inf, -np.inf], 0.0).fillna(0.0)
 
-    print(f"  ✅ {len(feature_cols)} features computed. Shape: {df.shape}")
+    print(f"  {len(feature_cols)} features computed. Shape: {df.shape}")
     return df
 
 

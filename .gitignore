@@ -1,0 +1,40 @@
+# Environment
+.env
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Data & Models (generated, too large for git)
+data/train.csv
+data/test.csv
+data/full_dataset.csv
+models/*.pkl
+models/*.joblib
+models/*.json
+
+# Keep sample and gitkeep
+!data/sample_transactions.csv
+!data/.gitkeep
+!models/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Docs (not needed in repo)
+extract_docx.ps1
+RAZORAI.docx
