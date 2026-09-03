@@ -2,7 +2,7 @@ import os
 import sys
 import argparse
 
-# Add parent directory to path to allow importing from src
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.data.data_generator import generate_dataset, split_dataset
