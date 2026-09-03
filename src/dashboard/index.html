@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FraudSense | AI Risk Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="glass-panel">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <h1>FraudSense <span class="badge">Live</span></h1>
+            </div>
+            <div class="header-metrics">
+                <div class="metric">
+                    <span class="label">Transactions Processed</span>
+                    <span class="value" id="metric-total">0</span>
+                </div>
+                <div class="metric alert">
+                    <span class="label">Fraud Spikes Blocked</span>
+                    <span class="value" id="metric-blocked">0</span>
+                </div>
+                <div class="metric success">
+                    <span class="label">System Status</span>
+                    <span class="value">Secure & Active</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-grid">
+            <!-- Left Column: Live Feed -->
+            <section class="live-feed glass-panel">
+                <div class="section-header">
+                    <h2>Live Transaction Stream</h2>
+                    <div class="pulse-indicator"></div>
+                </div>
+                
+                <div class="table-header">
+                    <div class="col">ID</div>
+                    <div class="col">Amount</div>
+                    <div class="col">Location</div>
+                    <div class="col">Method</div>
+                    <div class="col">Risk Score</div>
+                </div>
+
+                <div class="feed-container" id="transaction-feed">
+                    <!-- Transactions will be injected here via JS -->
+                    <div class="empty-state" id="feed-empty">Waiting for transactions...</div>
+                </div>
+            </section>
+
+            <!-- Right Column: LLM Explanations & Model Details -->
+            <section class="analysis-panel">
+                <!-- AI Explanation Box -->
+                <div class="gemini-box glass-panel">
+                    <div class="section-header">
+                        <h2>🤖 AI Risk Analysis</h2>
+                    </div>
+                    <div class="analysis-content" id="gemini-analysis">
+                        <div class="empty-analysis">Select a flagged transaction from the feed to view AI reasoning.</div>
+                    </div>
+                </div>
+
+                <!-- Feature Importance Chart -->
+                <div class="features-box glass-panel mt-4">
+                    <div class="section-header">
+                        <h2>Top Contributing Signals</h2>
+                    </div>
+                    <div class="feature-bars" id="feature-bars">
+                        <!-- Bars injected via JS -->
+                        <div class="empty-analysis">Awaiting anomaly data...</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>
