@@ -105,7 +105,7 @@ class FraudClassifier:
         print(f"Samples: {len(y)} | Fraud: {y.sum()} ({y.mean()*100:.1f}%)")
         print(f"Features: {len(feature_columns)}")
 
-        # Step 1: Optuna tuning for LightGBM
+        # Hyperparameter tuning via Optuna
         print(f"\n🔍 Running Optuna tuning ({n_optuna_trials} trials)...")
         study = optuna.create_study(direction="minimize")
         study.optimize(lambda trial: self._objective(trial, X, y), n_trials=n_optuna_trials)
@@ -114,7 +114,7 @@ class FraudClassifier:
         print(f"   Best cost: ₹{study.best_value:,.0f}")
         print(f"   Best params: {json.dumps(self.best_params, indent=2)}")
 
-        # Step 2: Train LightGBM with best params
+        # Primary model training (LightGBM)
         print("\n📊 Training LightGBM...")
         self.lgb_model = lgb.LGBMClassifier(
             **self.best_params,
@@ -124,7 +124,7 @@ class FraudClassifier:
         )
         self.lgb_model.fit(X, y)
 
-        # Step 3: Train Random Forest
+        # Secondary model training (Random Forest)
         print("🌲 Training Random Forest...")
         self.rf_model = RandomForestClassifier(
             n_estimators=300,
@@ -136,7 +136,7 @@ class FraudClassifier:
         )
         self.rf_model.fit(X, y)
 
-        # Step 4: Cost-sensitive threshold optimization
+        # Cost-sensitive threshold optimization
         print("⚖️  Optimizing threshold...")
         self.threshold = self._optimize_threshold(X, y)
         print(f"   Optimal threshold: {self.threshold:.3f}")

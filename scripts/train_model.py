@@ -31,7 +31,7 @@ def main():
     print("  FraudSense — Training Pipeline")
     print("=" * 60)
 
-   
+    # Load Data
     data_dir = PROJECT_ROOT / "data"
     train_path = data_dir / "train.csv"
     test_path = data_dir / "test.csv"
@@ -46,7 +46,7 @@ def main():
     test_df = pd.read_csv(test_path)
     print(f"   Train: {len(train_df)} rows | Test: {len(test_df)} rows")
 
-    
+    # Compute Features
     print("\n🔧 Computing features on training data...")
     t0 = time.time()
     train_df = compute_features(train_df, fit_unsupervised=True)
@@ -57,7 +57,7 @@ def main():
     test_df = compute_features(test_df, fit_unsupervised=False)
     print(f"   Done in {time.time() - t0:.1f}s")
 
-    
+    # Prepare Train/Test Matrices
     feature_cols = get_feature_columns()
     X_train = train_df[feature_cols].values
     y_train = train_df["is_fraud"].values
@@ -68,7 +68,7 @@ def main():
     print(f"   Train: {len(y_train)} samples ({y_train.sum()} fraud, {y_train.mean()*100:.1f}%)")
     print(f"   Test:  {len(y_test)} samples ({y_test.sum()} fraud, {y_test.mean()*100:.1f}%)")
 
-    
+    # Train Classifier
     classifier = FraudClassifier()
     train_summary = classifier.train(
         X=X_train,
@@ -77,7 +77,7 @@ def main():
         n_optuna_trials=50,
     )
 
-    
+    # Evaluate on Test Set
     print("\n📈 Evaluating on test set...")
     predictions = classifier.predict(X_test)
 
@@ -94,7 +94,7 @@ def main():
 
     print_evaluation_report(metrics)
 
-    
+    # Serialize Models and Metrics
     model_dir = str(PROJECT_ROOT / "models")
     classifier.save(model_dir)
     save_state(model_dir)

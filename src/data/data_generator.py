@@ -44,7 +44,7 @@ def generate_dataset(n_transactions: int = 10000, fraud_rate: float = 0.05, seed
     
     transactions = []
     
-    # 1. Generate Legit Transactions
+    # Generate legitimate baseline traffic
     for _ in range(n_legit):
         cust = np.random.choice(customers)
         merch = np.random.choice(merchants)
@@ -75,7 +75,7 @@ def generate_dataset(n_transactions: int = 10000, fraud_rate: float = 0.05, seed
             'fraud_type': None
         })
         
-    # 2. Inject Fraud Patterns
+    # Inject anomalous patterns for model training
     fraud_patterns = ['velocity_spike', 'amount_anomaly', 'geo_mismatch', 'card_testing', 'return_fraud']
     fraud_counts = {p: n_fraud // len(fraud_patterns) for p in fraud_patterns}
     
@@ -83,8 +83,7 @@ def generate_dataset(n_transactions: int = 10000, fraud_rate: float = 0.05, seed
     for i in range(n_fraud % len(fraud_patterns)):
         fraud_counts[fraud_patterns[i]] += 1
         
-    # Velocity Spike (5-15 txns within 30s)
-    # Generating in batches to hit the target count
+    # Simulate velocity anomaly
     current_vs = 0
     while current_vs < fraud_counts['velocity_spike']:
         cust = np.random.choice(customers)
@@ -116,7 +115,7 @@ def generate_dataset(n_transactions: int = 10000, fraud_rate: float = 0.05, seed
             })
         current_vs += batch_size
             
-    # Amount Anomaly (20-100x above median)
+    # Simulate amount anomaly
     for _ in range(fraud_counts['amount_anomaly']):
         cust = np.random.choice(customers)
         merch = np.random.choice(merchants)
@@ -139,7 +138,7 @@ def generate_dataset(n_transactions: int = 10000, fraud_rate: float = 0.05, seed
             'fraud_type': 'amount_anomaly'
         })
         
-    # Geo Mismatch (wrong city)
+    # Simulate geolocation mismatch
     for _ in range(fraud_counts['geo_mismatch']):
         cust = np.random.choice(customers)
         merch = np.random.choice(merchants)
@@ -165,7 +164,7 @@ def generate_dataset(n_transactions: int = 10000, fraud_rate: float = 0.05, seed
             'fraud_type': 'geo_mismatch'
         })
         
-    # Card Testing (rapid 1-10 INR txns)
+    # Simulate BIN/card testing behavior
     current_ct = 0
     while current_ct < fraud_counts['card_testing']:
         cust = np.random.choice(customers)
@@ -195,7 +194,7 @@ def generate_dataset(n_transactions: int = 10000, fraud_rate: float = 0.05, seed
             })
         current_ct += batch_size
             
-    # Return Fraud (buy and return slightly different amount)
+    # Simulate return fraud (refund abuse)
     current_rf = 0
     while current_rf < fraud_counts['return_fraud']:
         cust = np.random.choice(customers)
