@@ -294,30 +294,49 @@ async def stream_transactions():
         for txn in scored_transactions[-50:]:
             yield {"event": "transaction", "data": json.dumps(txn)}
 
-        # Then simulate live feed from test data
+        # Then simulate live feed from test data with full history preserved
         test_path = PROJECT_ROOT / "data" / "test.csv"
-        if test_path.exists() and classifier is not None:
-            df = pd.read_csv(test_path)
-            df["timestamp"] = pd.to_datetime(df["timestamp"])
+        train_path = PROJECT_ROOT / "data" / "train.csv"
+        
+        if test_path.exists() and train_path.exists() and classifier is not None:
+            # For the demo, we compute features on train+test together so that 
+            # customer history (like most common city) is preserved for the stream.
+            train_df = pd.read_csv(train_path)
+            test_df = pd.read_csv(test_path)
+            
+            # Take a chunk of test_df to simulate stream (200 rows)
+            stream_raw = test_df.iloc[:200].copy()
+            
+            # Concatenate train + stream chunk to compute features with history
+            df_full = pd.concat([train_df, stream_raw]).sort_values("timestamp").reset_index(drop=True)
+            df_full["timestamp"] = pd.to_datetime(df_full["timestamp"])
+            
+            # Compute features globally to preserve history dictionaries
+            df_features = compute_features(df_full, fit_unsupervised=False)
+            
+            # Extract just the stream portion
+            stream_features = df_features.iloc[-len(stream_raw):].copy()
+            stream_raw = df_full.iloc[-len(stream_raw):].copy()
 
-            # Process in small batches
+            # Process in small batches for the SSE delay
             batch_size = 5
-            for start in range(0, min(len(df), 200), batch_size):
-                batch = df.iloc[start:start + batch_size].copy()
-                batch_features = compute_features(batch, fit_unsupervised=False)
+            for start in range(0, len(stream_raw), batch_size):
+                batch_raw = stream_raw.iloc[start:start + batch_size]
+                batch_feat = stream_features.iloc[start:start + batch_size]
+                
                 feature_cols = get_feature_columns()
-                X = batch_features[feature_cols].values
+                X = batch_feat[feature_cols].values
                 result = classifier.predict(X)
 
-                for j in range(len(batch)):
+                for j in range(len(batch_raw)):
                     txn_data = {
-                        "transaction_id": batch.iloc[j].get("transaction_id", f"TXN-{start+j}"),
-                        "amount": float(batch.iloc[j]["amount"]),
-                        "payment_method": str(batch.iloc[j].get("payment_method", "card")),
+                        "transaction_id": batch_raw.iloc[j].get("transaction_id", f"TXN-{start+j}"),
+                        "amount": float(batch_raw.iloc[j]["amount"]),
+                        "payment_method": str(batch_raw.iloc[j].get("payment_method", "card")),
                         "fraud_score": round(float(result["fraud_scores"][j]), 4),
                         "is_flagged": bool(result["is_flagged"][j]),
                         "top_features": result["top_features_per_sample"][j],
-                        "customer_city": str(batch.iloc[j].get("customer_city", "")),
+                        "customer_city": str(batch_raw.iloc[j].get("customer_city", "")),
                     }
 
                     # Get explanation for flagged transactions
