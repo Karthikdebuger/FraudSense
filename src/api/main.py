@@ -314,9 +314,10 @@ async def stream_transactions():
             # Compute features globally to preserve history dictionaries
             df_features = compute_features(df_full, fit_unsupervised=False)
             
-            # Extract just the stream portion
-            stream_features = df_features.iloc[-len(stream_raw):].copy()
-            stream_raw = df_full.iloc[-len(stream_raw):].copy()
+            # Extract just the stream portion using transaction_ids to avoid interleaving issues
+            stream_txns = set(stream_raw['transaction_id'])
+            stream_features = df_features[df_features['transaction_id'].isin(stream_txns)].copy()
+            stream_raw = df_full[df_full['transaction_id'].isin(stream_txns)].copy()
 
             # Process in small batches for the SSE delay
             batch_size = 5
