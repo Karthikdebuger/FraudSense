@@ -61,19 +61,19 @@ def _fallback_explanation(top_features: List[str], fraud_score: float) -> str:
         feat_name = feat_name.strip()
         
         if "txn_count_30s" in feat_lower:
-            explanations.append(f"Unusually high transaction velocity: {value} transactions in 30 seconds from the same card.")
+            explanations.append(f"Unusually high transaction velocity detected in a 30-second window (SHAP impact: {value}).")
         elif "amount_ratio_median" in feat_lower or "amount_zscore" in feat_lower:
-            explanations.append(f"Transaction amount is {value}x the merchant median, indicating a potential amount anomaly.")
+            explanations.append(f"Transaction amount is highly anomalous compared to the merchant median (SHAP impact: {value}).")
         elif "geo" in feat_lower:
-            explanations.append("Transaction originated from a different city than the cardholder's registered location.")
+            explanations.append(f"Transaction originated from a different city than the cardholder's registered location (SHAP impact: {value}).")
         elif "velocity_ratio" in feat_lower:
-            explanations.append(f"Velocity spike detected with ratio {value}, indicating a burst of rapid transactions.")
+            explanations.append(f"Velocity spike detected, indicating a burst of rapid transactions (SHAP impact: {value}).")
         elif "isolation_forest" in feat_lower or "local_outlier" in feat_lower:
-            explanations.append(f"Statistical anomaly detected: outlier score of {value} on unsupervised analysis.")
+            explanations.append(f"Statistical behavioral anomaly detected on unsupervised analysis (SHAP impact: {value}).")
         elif "residual_score" in feat_lower:
-            explanations.append(f"Amount deviates significantly from merchant's expected pattern (residual: {value}).")
+            explanations.append(f"Amount deviates significantly from merchant's expected pattern (SHAP impact: {value}).")
         else:
-            explanations.append(f"Suspicious anomaly detected in {feat_name} (value: {value}).")
+            explanations.append(f"Suspicious anomaly detected in {feat_name} (SHAP impact: {value}).")
             
     if not explanations:
         return f"Transaction flagged as suspicious with score {fraud_score:.2f} due to anomalous feature patterns."
