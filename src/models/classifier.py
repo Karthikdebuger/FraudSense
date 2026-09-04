@@ -210,7 +210,7 @@ class FraudClassifier:
             for idx in top_indices:
                 name = self.feature_columns[idx]
                 raw_value = X[i, idx]
-                features.append(f"{name}={raw_value:.2f}")
+                features.append(f"{name}={raw_value:.4f}")
             result.append(features)
         return result
 

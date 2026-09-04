@@ -131,7 +131,7 @@ function renderFeatures(featuresArray) {
         container.innerHTML = `
             <div class="feature-label">
                 <span>${f.name}</span>
-                <span>${f.value.toFixed(2)}</span>
+                <span>${f.value < 0.01 && f.value > -0.01 ? f.value.toFixed(4) : f.value.toFixed(2)}</span>
             </div>
             <div class="feature-track">
                 <div class="feature-fill" style="width: 0%"></div>
